@@ -1,6 +1,6 @@
-# Assignment 1
+# Assignment 2
 
-This folder contains my solution for Assignment 1.
+This folder contains my solution for Assignment 2.
 
 ## Running
 
@@ -9,7 +9,7 @@ This repository uses `uv` for package installation and management. uv installati
 
 The code can be installed and run via:
 ```bash
-uv run assignment1.py
+uv run assignment2.py
 ```
 
 ## Tests
