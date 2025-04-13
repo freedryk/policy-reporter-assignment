@@ -1,63 +1,63 @@
-from enum import Enum
-from typing import Any, Generic, TypeVar
+from collections.abc import Hashable
+from typing import Any, Sequence
+
+from pydantic.dataclasses import dataclass
 
 
-S = TypeVar("S", bound=Enum)
-I = TypeVar("I", bound=Enum)
+@dataclass(frozen=True)
+class State:
+    """
+    Base class for all states.
+    """
+
+    name: str
+    value: Any
 
 
-class FSM(Generic[S, I]):
+@dataclass
+class FSM:
     """
     Generic base class for a finite state machine (FSM).
     """
 
-    def __init__(
-        self,
-        states: type[S],
-        inputs: type[I],
-        transitions: dict[tuple[S, I], S],
-        initial_state: S,
-        accepting_states: list[S],
-    ) -> None:
-        self._states = states
-        self._inputs = inputs
+    states: Sequence[State]
+    inputs: Sequence[Hashable]
+    initial_state: State
+    accepting_states: Sequence[State]
+    transitions: dict[tuple[State, Hashable], State]
 
-        assert all(isinstance(trans, tuple) for trans in transitions.keys()), (
-            f"Invalid transition: {transitions}. Expected all keys to be tuples of type ({states}, {inputs})"
-        )
+    def __post_init__(self) -> None:
+        for trans in self.transitions:
+            assert trans[1] in self.inputs, (
+                f"transitions input {trans[1]} not in inputs {self.inputs}"
+            )
 
-        assert all(isinstance(state, states) for state in transitions.values()), (
-            f"Invalid transition: {transitions}. Expected all values to be of type {states}"
-        )
-        self._transitions = transitions
+        self._state = self.initial_state
 
-        assert initial_state in states, f"Invalid initial state: {initial_state}"
-        self._state = initial_state
-
-        assert all(state in states for state in accepting_states), (
-            f"Invalid accepting states: {accepting_states}"
-        )
-        self._accepting_states = (
-            accepting_states if accepting_states is not None else list(states)
-        )
-
-    def input(self, value: Any) -> None:
+    def input(self, value: Hashable) -> None:
         """
         Transition to the next state based on the current state and event.
         """
-        # if the input is not in the inputs enum, raise an error
-        input_ = self._inputs(value)
-        self.state = self._transitions[(self.state, input_)]
+        if value not in self.inputs:
+            raise ValueError(f"Invalid input: {value}. Expected one of: {self.inputs}")
+
+        transition = self.transitions.get((self.state, value))
+        if transition is None:
+            raise ValueError(
+                f"No transition defined for state {self.state} with input {value}"
+            )
+        self.state = self.transitions[(self.state, value)]
 
     @property
-    def state(self) -> S:
+    def state(self) -> State:
         return self._state
 
     @state.setter
-    def state(self, new_state: S) -> None:
-        assert isinstance(new_state, self._states), (
-            f"Invalid state: {new_state}. Expected type: {self._states}"
-        )
+    def state(self, new_state: State) -> None:
+        if new_state not in self.states:
+            raise ValueError(
+                f"Invalid state: {new_state}. Expected type: {self.states}"
+            )
         self._state = new_state
 
     @property
@@ -65,4 +65,4 @@ class FSM(Generic[S, I]):
         """
         Check if the current state is an accepting state.
         """
-        return self._state in self._accepting_states
+        return self._state in self.accepting_states

@@ -1,44 +1,44 @@
-from enum import Enum, IntEnum
-
-from assignment_2.state_machine import FSM
+from assignment_2.state_machine import FSM, State
 
 
-class Inputs(Enum):
-    ZERO = "0"
-    ONE = "1"
+class ModThreeFSM(FSM):
+    """
+    Finite State Machine (FSM) that calculate the modulo 3 of a binary string.
+    """
 
+    inputs = ["0", "1"]
 
-class States(IntEnum):
-    S0 = 0
-    S1 = 1
-    S2 = 2
+    S0 = State("S0", 0)
+    S1 = State("S1", 1)
+    S2 = State("S2", 2)
+    states = [S0, S1, S2]
 
-
-class BDT(FSM[States, Inputs]):
-    _transitions = {
-        (States.S0, Inputs.ZERO): States.S0,
-        (States.S0, Inputs.ONE): States.S1,
-        (States.S1, Inputs.ZERO): States.S2,
-        (States.S1, Inputs.ONE): States.S0,
-        (States.S2, Inputs.ZERO): States.S1,
-        (States.S2, Inputs.ONE): States.S2,
+    transitions = {
+        (S0, "0"): S0,
+        (S0, "1"): S1,
+        (S1, "0"): S2,
+        (S1, "1"): S0,
+        (S2, "0"): S1,
+        (S2, "1"): S2,
     }
 
     def __init__(self):
         super().__init__(
-            States,
-            Inputs,
-            self._transitions,
-            States.S0,
-            [States.S0, States.S1, States.S2],
+            self.states,
+            self.inputs,
+            self.S0,
+            self.states,
+            self.transitions,
         )
 
 
 def main():
-    fsm = BDT()
-    binary_string = "1110"  # Example binary string
+    binary_strings = ["1101", "1110", "1111"]  # Example binary strings
 
-    for c in binary_string:
-        fsm.input(c)
+    for bs in binary_strings:
+        fsm = ModThreeFSM()
+        for c in bs:
+            fsm.input(c)
 
-    print(f"Result: {fsm.state}")
+        if fsm.is_accepting:
+            print(f"Input: {bs} Output: {fsm.state.value}")
