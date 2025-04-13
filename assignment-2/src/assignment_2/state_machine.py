@@ -1,4 +1,4 @@
-from enum import Enum, IntEnum
+from enum import Enum
 from typing import Any, Generic, TypeVar
 
 
@@ -60,6 +60,7 @@ class FSM(Generic[S, I]):
         )
         self._state = new_state
 
+    @property
     def is_accepting(self) -> bool:
         """
         Check if the current state is an accepting state.

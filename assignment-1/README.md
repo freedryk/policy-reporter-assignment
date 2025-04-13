@@ -2,6 +2,17 @@
 
 This folder contains my solution for Assignment 1.
 
+Input data is expected in JSONL file format with one JSON object per line in the format
+
+```JSON
+{"threshold": 0.1, "true_positive": 10, "false_positive": 5, "false_negative": 2, "true_negative": 8}
+```
+
+A test data file, [test.jsonl](test.jsonl), in included in this repository.
+
+To determine the best threshold that achieves a recall >= 0.9, I filter all thresholds with recall less than 0.9,
+then sort the remaining thresholds by their f1 score.
+
 ## Running
 
 This repository uses `uv` for package installation and management. uv installation instructions can be found

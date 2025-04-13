@@ -20,11 +20,16 @@ class TestFSM:
             (States.B, Inputs.TOGGLE): States.A,
         }
 
-        fsm: FSM[States, Inputs] = FSM(States, Inputs, transitions, States.A, list(States))
+        fsm: FSM[States, Inputs] = FSM(States, Inputs, transitions, States.A, [States.A])
         assert fsm.state == States.A
+        assert fsm.is_accepting is True
 
         fsm.input(Inputs.TOGGLE)
         assert fsm.state == States.B
+        assert fsm.is_accepting is False
 
         fsm.input(Inputs.TOGGLE)
         assert fsm.state == States.A
+        assert fsm.is_accepting is True
+
+    
