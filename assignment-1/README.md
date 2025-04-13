@@ -11,7 +11,7 @@ Input data is expected in JSONL file format with one JSON object per line in the
 A test data file, [test.jsonl](test.jsonl), in included in this repository.
 
 To determine the best threshold that achieves a recall >= 0.9, I filter all thresholds with recall less than 0.9,
-then sort the remaining thresholds by their f1 score.
+then sort the remaining thresholds by their [f1 score](https://en.wikipedia.org/wiki/F-score).
 
 ## Running
 
